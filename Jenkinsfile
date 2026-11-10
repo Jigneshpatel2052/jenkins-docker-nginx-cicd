@@ -71,26 +71,41 @@ stage('Validate') {
             }
         }
 
-        stage('Smoke Test') {
-            steps {
-                sh '''
-                    set -eu
+        
+stage('Smoke Test') {
+    steps {
+        sh '''
+            set -eu
 
-                    for i in $(seq 1 15); do
-                        if curl -fsS http://127.0.0.1:8081/ \
-                            | grep -q "Jenkins + Docker + Nginx"; then
-                            echo "Deployment test passed"
-                            exit 0
-                        fi
-                        sleep 2
-                    done
+            echo "Starting application smoke test..."
 
-                    echo "Deployment test failed"
-                    docker compose logs --tail=50
-                    exit 1
-                '''
-            }
-        }
+            for i in $(seq 1 15); do
+
+                if curl -fsS http://127.0.0.1:8081/ \
+                    -o /tmp/devops-website.html; then
+
+                    if grep -qi "Automating the Future" \
+                        /tmp/devops-website.html; then
+
+                        echo "HTTP response successful"
+                        echo "Website content verified"
+                        echo "Deployment smoke test passed"
+
+                        exit 0
+                    fi
+                fi
+
+                echo "Waiting for website..."
+                sleep 2
+            done
+
+            echo "Smoke test failed!"
+            docker compose logs --tail=50
+            exit 1
+        '''
+    }
+}
+
     }
 
     post {
