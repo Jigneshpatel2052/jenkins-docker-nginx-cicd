@@ -23,20 +23,34 @@ pipeline {
             }
         }
 
-        stage('Validate') {
-            steps {
-                sh '''
-                    set -eu
-                    test -s index.html
-                    test -s style.css
-                    test -s Dockerfile
-                    test -s compose.yaml
-                    grep -q "Jenkins + Docker + Nginx" index.html
-                    docker compose config -q
-                    echo "Validation successful"
-                '''
-            }
-        }
+        
+stage('Validate') {
+    steps {
+        sh '''
+            set -eu
+
+            echo "Checking project files..."
+
+            test -s index.html
+            test -s style.css
+            test -s Dockerfile
+            test -s compose.yaml
+
+            echo "Checking website content..."
+
+            grep -qi "Automating the Future" index.html
+            grep -qi "DevOps" index.html
+            grep -qi "Nginx" index.html
+
+            echo "Validating Docker Compose..."
+
+            docker compose config -q
+
+            echo "All validation checks passed!"
+        '''
+    }
+}
+
 
         stage('Build Docker Image') {
             steps {
