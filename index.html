@@ -1,27 +1,395 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevOps CI/CD Project</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevOps Deployment Lab | Jenkins Docker Nginx</title>
+    <meta name="description" content="Hands-on DevOps project showcasing automated CI/CD deployment using Jenkins, Docker, GitHub and Nginx on Ubuntu Server 24.04.">
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <main class="container">
-    <div class="badge">DEVOPS PROJECT</div>
-    <h1>My Autimated DevOps Deployment - Version 2</h1>
-    <p>Automated CI/CD Deployment on Ubuntu 24.04</p>
 
-    <section class="services">
-      <div class="card">GitHub<br><small>Source Control</small></div>
-      <div class="card">Jenkins<br><small>CI/CD Automation</small></div>
-      <div class="card">Docker<br><small>Containerization</small></div>
-      <div class="card">Nginx<br><small>Web Server</small></div>
-    </section>
+<!-- NAVIGATION -->
+<header class="navbar">
+    <a href="#home" class="logo">
+        <span class="logo-icon">D</span>
+        DevOps<span>Lab</span>
+    </a>
 
-    <div class="status">Deployment Successful</div>
-    <footer>Built and deployed using a Jenkins CI/CD Pipeline</footer>
-  </main>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">Project</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#technology">Technologies</a>
+    </nav>
+
+    <a class="nav-button"
+       href="https://github.com/Jigneshpatel2052/jenkins-docker-nginx-cicd"
+       target="_blank" rel="noopener noreferrer">
+        GitHub ↗
+    </a>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+            <span class="live-dot"></span>
+            HANDS-ON DEVOPS PRACTICE PROJECT
+        </div>
+
+        <h1>
+            Automating the Future<br>
+            With <span>DevOps</span>
+        </h1>
+
+        <p class="hero-description">
+            Building and deploying modern web applications through
+            Jenkins CI/CD automation, Docker containerization,
+            GitHub integration and Nginx.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="#architecture" class="primary-button">
+                Explore Project →
+            </a>
+
+            <a href="https://github.com/Jigneshpatel2052/jenkins-docker-nginx-cicd"
+               target="_blank" rel="noopener noreferrer"
+               class="secondary-button">
+                View GitHub ↗
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div>
+                <h3>05</h3>
+                <p>Pipeline Stages</p>
+            </div>
+            <div>
+                <h3>04</h3>
+                <p>Core Technologies</p>
+            </div>
+            <div>
+                <h3>01</h3>
+                <p>Automated Deployment</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <span>devops@ubuntu-server:~</span>
+        </div>
+
+        <div class="terminal-body">
+            <p><span class="green">$</span> docker ps</p>
+            <p class="muted">CONTAINER ID &nbsp; IMAGE</p>
+            <p>0e11bdddd414</p>
+            <p class="cyan">devops-portfolio:latest</p>
+            <p class="green">STATUS: Up (healthy)</p>
+            <br>
+
+            <p><span class="green">$</span> docker compose ps</p>
+            <p class="green">✓ Container running</p>
+            <br>
+
+            <p><span class="green">$</span> curl -I localhost:8081</p>
+            <p class="cyan">HTTP/1.1 200 OK</p>
+            <p class="green">✓ Deployment verified</p>
+            <br>
+
+            <p><span class="green">$</span> <span class="cursor">_</span></p>
+        </div>
+    </div>
+</section>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+    <div>
+        <span class="status-dot"></span>
+        PROJECT STATUS
+    </div>
+    <div class="status-success">CI/CD DEPLOYMENT SUCCESSFUL</div>
+    <div>Ubuntu Server 24.04</div>
+</div>
+
+<!-- ABOUT PROJECT -->
+<section class="section" id="about">
+
+    <div class="section-heading">
+        <span class="section-label">01 / PROJECT OVERVIEW</span>
+        <h2>About The <span>Project</span></h2>
+        <p>
+            A hands-on DevOps implementation focused on
+            automated application deployment.
+        </p>
+    </div>
+
+    <div class="about-grid">
+
+        <div class="about-card">
+            <div class="card-icon">⚙</div>
+            <h3>CI/CD Automation</h3>
+            <p>
+                Jenkins automates source-code checkout, validation,
+                Docker image building, deployment and smoke testing.
+            </p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">🐳</div>
+            <h3>Containerization</h3>
+            <p>
+                Docker packages the website and its Nginx web server
+                into a portable container image.
+            </p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">🌐</div>
+            <h3>Web Deployment</h3>
+            <p>
+                Docker Compose manages the Nginx container,
+                published port and container health check.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="section architecture-section" id="architecture">
+
+    <div class="section-heading">
+        <span class="section-label">02 / SYSTEM DESIGN</span>
+        <h2>Project <span>Architecture</span></h2>
+        <p>How the source code moves from GitHub to the deployed website.</p>
+    </div>
+
+    <div class="architecture">
+
+        <div class="architecture-box">
+            <div class="architecture-icon">⌘</div>
+            <h3>GitHub</h3>
+            <p>Source Code Management</p>
+        </div>
+
+        <div class="architecture-arrow">→</div>
+
+        <div class="architecture-box">
+            <div class="architecture-icon">⚙</div>
+            <h3>Jenkins</h3>
+            <p>CI/CD Automation</p>
+        </div>
+
+        <div class="architecture-arrow">→</div>
+
+        <div class="architecture-box">
+            <div class="architecture-icon">🐳</div>
+            <h3>Docker</h3>
+            <p>Image Building</p>
+        </div>
+
+        <div class="architecture-arrow">→</div>
+
+        <div class="architecture-box">
+            <div class="architecture-icon">🌐</div>
+            <h3>Nginx</h3>
+            <p>Web Application</p>
+        </div>
+
+    </div>
+
+    <div class="deployment-note">
+        <span class="status-dot"></span>
+        Website published on host port 8081
+    </div>
+
+</section>
+
+<!-- PIPELINE -->
+<section class="section" id="pipeline">
+
+    <div class="section-heading">
+        <span class="section-label">03 / AUTOMATION</span>
+        <h2>Jenkins CI/CD <span>Pipeline</span></h2>
+        <p>Five automated stages in the deployment workflow.</p>
+    </div>
+
+    <div class="pipeline">
+
+        <div class="pipeline-stage">
+            <div class="stage-number">01</div>
+            <div class="stage-icon">⌘</div>
+            <h3>Checkout</h3>
+            <p>Fetch source code from GitHub.</p>
+            <span class="stage-status">✓ COMPLETED</span>
+        </div>
+
+        <div class="pipeline-stage">
+            <div class="stage-number">02</div>
+            <div class="stage-icon">✓</div>
+            <h3>Validate</h3>
+            <p>Validate application files and Compose configuration.</p>
+            <span class="stage-status">✓ COMPLETED</span>
+        </div>
+
+        <div class="pipeline-stage">
+            <div class="stage-number">03</div>
+            <div class="stage-icon">🐳</div>
+            <h3>Build Image</h3>
+            <p>Build and tag the custom Docker image.</p>
+            <span class="stage-status">✓ COMPLETED</span>
+        </div>
+
+        <div class="pipeline-stage">
+            <div class="stage-number">04</div>
+            <div class="stage-icon">🚀</div>
+            <h3>Deploy</h3>
+            <p>Deploy the Nginx container using Compose.</p>
+            <span class="stage-status">✓ COMPLETED</span>
+        </div>
+
+        <div class="pipeline-stage">
+            <div class="stage-number">05</div>
+            <div class="stage-icon">🔍</div>
+            <h3>Smoke Test</h3>
+            <p>Verify HTTP response and website availability.</p>
+            <span class="stage-status">✓ COMPLETED</span>
+        </div>
+
+    </div>
+
+    <div class="pipeline-result">
+        <span class="result-icon">✓</span>
+        <div>
+            <h3>Pipeline Execution Successful</h3>
+            <p>All configured pipeline stages completed successfully.</p>
+        </div>
+    </div>
+
+</section>
+
+<!-- TECHNOLOGIES -->
+<section class="section technology-section" id="technology">
+
+    <div class="section-heading">
+        <span class="section-label">04 / TECHNOLOGY STACK</span>
+        <h2>Tools & <span>Technologies</span></h2>
+        <p>Technologies used in this hands-on project.</p>
+    </div>
+
+    <div class="technology-grid">
+
+        <div class="technology-card">
+            <span>🐧</span>
+            <h3>Linux</h3>
+            <p>Ubuntu Server 24.04</p>
+        </div>
+
+        <div class="technology-card">
+            <span>⚙</span>
+            <h3>Jenkins</h3>
+            <p>Declarative CI/CD Pipeline</p>
+        </div>
+
+        <div class="technology-card">
+            <span>🐳</span>
+            <h3>Docker</h3>
+            <p>Containerization</p>
+        </div>
+
+        <div class="technology-card">
+            <span>🌐</span>
+            <h3>Nginx</h3>
+            <p>Web Server</p>
+        </div>
+
+        <div class="technology-card">
+            <span>⌘</span>
+            <h3>Git</h3>
+            <p>Version Control</p>
+        </div>
+
+        <div class="technology-card">
+            <span>📦</span>
+            <h3>Docker Compose</h3>
+            <p>Container Management</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- LEARNING -->
+<section class="section learning-section">
+
+    <div class="learning-content">
+        <span class="section-label">05 / PRACTICAL EXPERIENCE</span>
+        <h2>What I <span>Learned</span></h2>
+
+        <ul>
+            <li>Linux server administration and service management.</li>
+            <li>Docker image creation and container management.</li>
+            <li>Jenkins declarative pipeline configuration.</li>
+            <li>GitHub integration and source-code management.</li>
+            <li>Docker Compose and container health checks.</li>
+            <li>Application deployment and HTTP troubleshooting.</li>
+        </ul>
+    </div>
+
+    <div class="learning-visual">
+        <div class="learning-circle">
+            <span>DEVOPS</span>
+            <strong>∞</strong>
+            <small>LEARN • BUILD • DEPLOY</small>
+        </div>
+    </div>
+
+</section>
+
+<!-- GITHUB CTA -->
+<section class="github-section">
+
+    <span class="section-label">06 / SOURCE CODE</span>
+    <h2>Explore The Project</h2>
+    <p>
+        Interested in the implementation?
+        Explore the source code, Dockerfile, Jenkinsfile and documentation.
+    </p>
+
+    <a href="https://github.com/Jigneshpatel2052/jenkins-docker-nginx-cicd"
+       target="_blank" rel="noopener noreferrer"
+       class="primary-button">
+        View GitHub Repository ↗
+    </a>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <a href="#home" class="logo">
+        <span class="logo-icon">D</span>
+        DevOps<span>Lab</span>
+    </a>
+
+    <p>Built as a hands-on DevOps learning project.</p>
+
+    <p class="copyright">
+        © 2026 DevOps Deployment Lab | Jenkins • Docker • Nginx
+    </p>
+</footer>
+
 </body>
 </html>
