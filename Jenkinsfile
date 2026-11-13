@@ -25,32 +25,37 @@ pipeline {
             }
         }
 
-        stage('Validate') {
-            steps {
-                sh '''
-                    set -eu
+        
+stage('Validate') {
+    steps {
+        sh '''
+            set -eu
 
-                    echo "Checking project files..."
+            echo "Checking project files..."
 
-                    test -s index.html
-                    test -s style.css
-                    test -s Dockerfile
-                    test -s compose.yaml
+            test -s index.html
+            test -s style.css
+            test -s Dockerfile
+            test -s compose.yaml
+            test -s nginx.conf
 
-                    echo "Checking website content..."
+            echo "Checking website content..."
 
-                    grep -qi "Automating the Future" index.html
-                    grep -qi "DevOps" index.html
-                    grep -qi "Nginx" index.html
+            grep -qi "From code" index.html
+            grep -qi "GitHub" index.html
+            grep -qi "Jenkins" index.html
+            grep -qi "Docker" index.html
+            grep -qi "Nginx" index.html
 
-                    echo "Validating Docker Compose..."
+            echo "Validating Docker Compose..."
 
-                    docker compose config -q
+            docker compose config -q
 
-                    echo "All validation checks passed!"
-                '''
-            }
-        }
+            echo "All validation checks passed!"
+        '''
+    }
+}
+
 
         stage('Build Docker Image') {
             steps {
