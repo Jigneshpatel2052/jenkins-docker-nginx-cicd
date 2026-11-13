@@ -68,21 +68,24 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                    set -eu
+        
+stage('Deploy') {
+    steps {
+        sh '''
+            set -eu
 
-                    echo "Deploying Nginx application..."
+            echo "Deploying Nginx application..."
 
-                    docker compose up -d --no-build --force-recreate
+            docker compose -p jenkins-docker-nginx-cicd \
+                up -d --no-build --force-recreate
 
-                    echo "Checking running containers..."
+            echo "Checking running containers..."
 
-                    docker compose ps
-                '''
-            }
-        }
+            docker ps
+        '''
+    }
+}
+
 
         stage('Smoke Test') {
             steps {
