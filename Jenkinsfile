@@ -92,42 +92,52 @@ stage('Deploy') {
 }
 
 
-        stage('Smoke Test') {
-            steps {
-                sh '''
-                    set -eu
+        
+stage('Smoke Test') {
+    steps {
+        sh '''
+            set -eu
 
-                    echo "Starting application smoke test..."
+            echo "Checking Docker container..."
 
-                    for i in $(seq 1 15); do
+            docker compose ps -a
 
-                        if curl -fsS \
-                            http://127.0.0.1:${APP_PORT}/ \
-                            -o /tmp/devops-website.html; then
+            echo "Waiting for application..."
 
-                            if grep -qi "Automating the Future" \
-                                /tmp/devops-website.html; then
+            for i in $(seq 1 15); do
 
-                                echo "HTTP response successful"
-                                echo "Website content verified"
-                                echo "Smoke test passed!"
+                if curl -kfsS \
+                    https://127.0.0.1:8443/ \
+                    -o /tmp/devops-website.html; then
 
-                                exit 0
-                            fi
-                        fi
+                    if grep -qi "From code" /tmp/devops-website.html &&
+                       grep -qi "Jenkins" /tmp/devops-website.html &&
+                       grep -qi "Docker" /tmp/devops-website.html; then
 
-                        echo "Waiting for application..."
-                        sleep 2
-                    done
+                        echo "HTTPS response successful"
+                        echo "Website content verified"
+                        echo "Smoke test passed"
 
-                    echo "Smoke test failed!"
+                        exit 0
+                    fi
+                fi
 
-                    docker compose logs --tail=50
+                echo "Waiting for Nginx application..."
+                sleep 2
 
-                    exit 1
-                '''
-            }
-        }
+            done
+
+            echo "Smoke test failed!"
+
+            docker compose ps -a
+            docker compose logs --tail=100 web
+
+            exit 1
+        '''
+    }
+}
+
+        
     }
 
     post {
