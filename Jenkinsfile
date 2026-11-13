@@ -81,17 +81,35 @@ stage('Deploy') {
         sh '''
             set -eu
 
+            echo "Creating SSL certificates..."
+
+            mkdir -p certs
+
+            if [ ! -s certs/server.crt ] || [ ! -s certs/server.key ]; then
+
+                openssl req -x509 -nodes -days 365 \
+                -newkey rsa:2048 \
+                -keyout certs/server.key \
+                -out certs/server.crt \
+                -subj "/CN=10.79.8.100"
+
+            fi
+
+            chmod 600 certs/server.key
+            chmod 644 certs/server.crt
+
+            echo "SSL certificates ready!"
+
             echo "Deploying application..."
 
-            docker compose -p "$COMPOSE_PROJECT_NAME" \
+            docker compose -p jenkins-docker-nginx-cicd \
                 up -d --no-build --force-recreate
 
-            echo "Checking deployed container..."
-
-            docker compose -p "$COMPOSE_PROJECT_NAME" ps -a
+            echo "Deployment completed!"
         '''
     }
 }
+
 
 
 
