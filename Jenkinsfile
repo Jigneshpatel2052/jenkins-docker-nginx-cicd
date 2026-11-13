@@ -13,51 +13,57 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'devops-portfolio'
-        CONTAINER_NAME = 'devops-web'
+        APP_PORT = '8081'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
+                echo 'Checking out source code from GitHub...'
                 checkout scm
             }
         }
 
-        
-stage('Validate') {
-    steps {
-        sh '''
-            set -eu
+        stage('Validate') {
+            steps {
+                sh '''
+                    set -eu
 
-            echo "Checking project files..."
+                    echo "Checking project files..."
 
-            test -s index.html
-            test -s style.css
-            test -s Dockerfile
-            test -s compose.yaml
+                    test -s index.html
+                    test -s style.css
+                    test -s Dockerfile
+                    test -s compose.yaml
 
-            echo "Checking website content..."
+                    echo "Checking website content..."
 
-            grep -qi "Automating the Future" index.html
-            grep -qi "DevOps" index.html
-            grep -qi "Nginx" index.html
+                    grep -qi "Automating the Future" index.html
+                    grep -qi "DevOps" index.html
+                    grep -qi "Nginx" index.html
 
-            echo "Validating Docker Compose..."
+                    echo "Validating Docker Compose..."
 
-            docker compose config -q
+                    docker compose config -q
 
-            echo "All validation checks passed!"
-        '''
-    }
-}
-
+                    echo "All validation checks passed!"
+                '''
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
                 sh '''
+                    set -eu
+
+                    echo "Building Docker image..."
+
                     docker build \
-                      -t ${IMAGE_NAME}:${BUILD_NUMBER} \
-                      -t ${IMAGE_NAME}:latest .
+                        -t ${IMAGE_NAME}:${BUILD_NUMBER} \
+                        -t ${IMAGE_NAME}:latest .
+
+                    echo "Docker image built successfully!"
                 '''
             }
         }
@@ -65,55 +71,70 @@ stage('Validate') {
         stage('Deploy') {
             steps {
                 sh '''
-                    docker compose up -d --no-build \
-                      --force-recreate
+                    set -eu
+
+                    echo "Deploying Nginx application..."
+
+                    docker compose up -d --no-build --force-recreate
+
+                    echo "Checking running containers..."
+
+                    docker compose ps
                 '''
             }
         }
 
-        
-stage('Smoke Test') {
-    steps {
-        sh '''
-            set -eu
+        stage('Smoke Test') {
+            steps {
+                sh '''
+                    set -eu
 
-            echo "Starting application smoke test..."
+                    echo "Starting application smoke test..."
 
-            for i in $(seq 1 15); do
+                    for i in $(seq 1 15); do
 
-                if curl -fsS http://127.0.0.1:8081/ \
-                    -o /tmp/devops-website.html; then
+                        if curl -fsS \
+                            http://127.0.0.1:${APP_PORT}/ \
+                            -o /tmp/devops-website.html; then
 
-                    if grep -qi "Automating the Future" \
-                        /tmp/devops-website.html; then
+                            if grep -qi "Automating the Future" \
+                                /tmp/devops-website.html; then
 
-                        echo "HTTP response successful"
-                        echo "Website content verified"
-                        echo "Deployment smoke test passed"
+                                echo "HTTP response successful"
+                                echo "Website content verified"
+                                echo "Smoke test passed!"
 
-                        exit 0
-                    fi
-                fi
+                                exit 0
+                            fi
+                        fi
 
-                echo "Waiting for website..."
-                sleep 2
-            done
+                        echo "Waiting for application..."
+                        sleep 2
+                    done
 
-            echo "Smoke test failed!"
-            docker compose logs --tail=50
-            exit 1
-        '''
-    }
-}
+                    echo "Smoke test failed!"
 
+                    docker compose logs --tail=50
+
+                    exit 1
+                '''
+            }
+        }
     }
 
     post {
         success {
             echo 'CI/CD pipeline completed successfully!'
+            echo 'Nginx application deployed successfully.'
         }
+
         failure {
-            echo 'Pipeline failed. Check Jenkins console output.'
+            echo 'CI/CD pipeline failed.'
+            echo 'Please check the Console Output.'
+        }
+
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
