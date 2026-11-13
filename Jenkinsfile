@@ -12,9 +12,10 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = 'devops-portfolio'
-        APP_PORT = '8081'
-    }
+    IMAGE_NAME = 'devops-portfolio'
+    CONTAINER_NAME = 'jenkins-docker-nginx-cicd-web-1'
+    COMPOSE_PROJECT_NAME = 'jenkins-docker-nginx-cicd'
+}
 
     stages {
 
@@ -74,70 +75,69 @@ stage('Validate') {
         }
 
         
+
 stage('Deploy') {
     steps {
         sh '''
             set -eu
 
-            echo "Deploying Nginx application..."
+            echo "Deploying application..."
 
-            docker compose -p jenkins-docker-nginx-cicd \
+            docker compose -p "$COMPOSE_PROJECT_NAME" \
                 up -d --no-build --force-recreate
 
-            echo "Checking running containers..."
+            echo "Checking deployed container..."
 
-            docker ps
+            docker compose -p "$COMPOSE_PROJECT_NAME" ps -a
         '''
     }
 }
 
 
+
         
+
 stage('Smoke Test') {
     steps {
         sh '''
             set -eu
 
-            echo "Checking Docker container..."
+            echo "Starting application smoke test..."
 
-            docker compose ps -a
+            for i in $(seq 1 30); do
 
-            echo "Waiting for application..."
-
-            for i in $(seq 1 15); do
-
-                if curl -kfsS \
-                    https://127.0.0.1:8443/ \
+                if curl -kfsS https://127.0.0.1:8443/ \
                     -o /tmp/devops-website.html; then
 
                     if grep -qi "From code" /tmp/devops-website.html &&
                        grep -qi "Jenkins" /tmp/devops-website.html &&
                        grep -qi "Docker" /tmp/devops-website.html; then
 
-                        echo "HTTPS response successful"
+                        echo "HTTPS connection successful"
                         echo "Website content verified"
-                        echo "Smoke test passed"
+                        echo "Smoke test passed!"
 
                         exit 0
                     fi
                 fi
 
-                echo "Waiting for Nginx application..."
+                echo "Waiting for application..."
                 sleep 2
-
             done
 
             echo "Smoke test failed!"
 
-            docker compose ps -a
-            docker compose logs --tail=100 web
+            echo "Container status:"
+            docker compose -p "$COMPOSE_PROJECT_NAME" ps -a
+
+            echo "Container logs:"
+            docker compose -p "$COMPOSE_PROJECT_NAME" logs --tail=100 web
 
             exit 1
         '''
     }
 }
-
-        
+       
     }
 
     post {
