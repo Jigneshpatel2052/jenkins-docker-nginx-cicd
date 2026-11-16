@@ -12,10 +12,9 @@ pipeline {
     }
 
     environment {
-    IMAGE_NAME = 'devops-portfolio'
-    CONTAINER_NAME = 'jenkins-docker-nginx-cicd-web-1'
-    COMPOSE_PROJECT_NAME = 'jenkins-docker-nginx-cicd'
-}
+        IMAGE_NAME = 'devops-portfolio'
+        COMPOSE_PROJECT_NAME = 'jenkins-docker-nginx-cicd'
+    }
 
     stages {
 
@@ -26,37 +25,35 @@ pipeline {
             }
         }
 
-        
-stage('Validate') {
-    steps {
-        sh '''
-            set -eu
+        stage('Validate') {
+            steps {
+                sh '''
+                    set -eu
 
-            echo "Checking project files..."
+                    echo "Checking project files..."
 
-            test -s index.html
-            test -s style.css
-            test -s Dockerfile
-            test -s compose.yaml
-            test -s nginx.conf
+                    test -s index.html
+                    test -s style.css
+                    test -s Dockerfile
+                    test -s compose.yaml
+                    test -s nginx.conf
 
-            echo "Checking website content..."
+                    echo "Checking website content..."
 
-            grep -qi "From code" index.html
-            grep -qi "GitHub" index.html
-            grep -qi "Jenkins" index.html
-            grep -qi "Docker" index.html
-            grep -qi "Nginx" index.html
+                    grep -qi "From code" index.html
+                    grep -qi "GitHub" index.html
+                    grep -qi "Jenkins" index.html
+                    grep -qi "Docker" index.html
+                    grep -qi "Nginx" index.html
 
-            echo "Validating Docker Compose..."
+                    echo "Checking Docker Compose..."
 
-            docker compose config -q
+                    docker compose config -q
 
-            echo "All validation checks passed!"
-        '''
-    }
-}
-
+                    echo "All validation checks passed!"
+                '''
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -74,86 +71,62 @@ stage('Validate') {
             }
         }
 
-        
+        stage('Deploy') {
+            steps {
+                sh '''
+                    set -eu
 
-stage('Deploy') {
-    steps {
-        sh '''
-            set -eu
+                    echo "Deploying HTTP application..."
 
-            echo "Creating SSL certificates..."
+                    docker compose up -d --no-build --force-recreate
 
-            mkdir -p certs
+                    echo "Deployment completed!"
+                '''
+            }
+        }
 
-            if [ ! -s certs/server.crt ] || [ ! -s certs/server.key ]; then
+        stage('Smoke Test') {
+            steps {
+                sh '''
+                    set -eu
 
-                openssl req -x509 -nodes -days 365 \
-                -newkey rsa:2048 \
-                -keyout certs/server.key \
-                -out certs/server.crt \
-                -subj "/CN=10.79.8.100"
+                    echo "Starting HTTP smoke test..."
 
-            fi
+                    for i in $(seq 1 15); do
 
-            chmod 600 certs/server.key
-            chmod 644 certs/server.crt
+                        if curl -fsS \
+                            http://127.0.0.1:8081/ \
+                            -o /tmp/devops-website.html; then
 
-            echo "SSL certificates ready!"
+                            if grep -qi "From code" \
+                                /tmp/devops-website.html; then
 
-            echo "Deploying application..."
+                                echo "HTTP response: SUCCESS"
+                                echo "Website content: VERIFIED"
+                                echo "Smoke test passed!"
 
-            docker compose -p jenkins-docker-nginx-cicd \
-                up -d --no-build --force-recreate
+                                exit 0
+                            fi
+                        fi
 
-            echo "Deployment completed!"
-        '''
-    }
-}
+                        echo "Waiting for application..."
+                        sleep 2
+                    done
 
+                    echo "Smoke test failed!"
 
+                    docker compose logs --tail=50
 
-
-
-stage('Smoke Test') {
-    steps {
-        sh '''
-            set -eu
-
-            echo "Testing HTTP website..."
-
-            for i in $(seq 1 15); do
-
-                if curl -fsS http://127.0.0.1:8081/ \
-                    -o /tmp/devops-website.html; then
-
-                    if grep -qi "Automating the Future" \
-                        /tmp/devops-website.html; then
-
-                        echo "HTTP test successful"
-                        echo "Website content verified"
-                        echo "Smoke test passed"
-                        exit 0
-                    fi
-                fi
-
-                sleep 2
-            done
-
-            echo "Smoke test failed"
-            docker compose logs --tail=50
-            exit 1
-        '''
-    }
-}
-        
-
-        
+                    exit 1
+                '''
+            }
+        }
     }
 
     post {
         success {
             echo 'CI/CD pipeline completed successfully!'
-            echo 'Nginx application deployed successfully.'
+            echo 'HTTP website deployed successfully.'
         }
 
         failure {

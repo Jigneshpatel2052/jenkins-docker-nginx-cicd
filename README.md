@@ -1,5 +1,4 @@
 
-# Jenkins + Docker + Nginx CI/CD Project
 
 ## Overview
 Automated deployment of a static website using
