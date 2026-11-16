@@ -55,21 +55,16 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                    set -eu
 
-                    echo "Building Docker image..."
+         
+stage('Build Docker Image') {
+    steps {
+        sh '''
+            docker build -t devops-portfolio:latest .
+        '''
+    }
+}
 
-                    docker build \
-                        -t ${IMAGE_NAME}:${BUILD_NUMBER} \
-                        -t ${IMAGE_NAME}:latest .
-
-                    echo "Docker image built successfully!"
-                '''
-            }
-        }
 
         stage('Deploy') {
             steps {
@@ -85,17 +80,7 @@ pipeline {
             }
         }
 
-           stage('Docker Cleanup') {
-    steps {
-        sh '''
-            echo "Removing dangling Docker images..."
-
-            docker image prune -f
-
-            echo "Docker cleanup completed!"
-        '''
-    }
-}
+         
 
         stage('Smoke Test') {
             steps {
