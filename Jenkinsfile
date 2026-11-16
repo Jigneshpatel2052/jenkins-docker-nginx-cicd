@@ -85,6 +85,18 @@ pipeline {
             }
         }
 
+           stage('Docker Cleanup') {
+    steps {
+        sh '''
+            echo "Removing dangling Docker images..."
+
+            docker image prune -f
+
+            echo "Docker cleanup completed!"
+        '''
+    }
+}
+
         stage('Smoke Test') {
             steps {
                 sh '''
