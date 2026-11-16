@@ -113,49 +113,41 @@ stage('Deploy') {
 
 
 
-        
 
 stage('Smoke Test') {
     steps {
         sh '''
             set -eu
 
-            echo "Starting application smoke test..."
+            echo "Testing HTTP website..."
 
-            for i in $(seq 1 30); do
+            for i in $(seq 1 15); do
 
-                if curl -kfsS https://127.0.0.1:8443/ \
+                if curl -fsS http://127.0.0.1:8081/ \
                     -o /tmp/devops-website.html; then
 
-                    if grep -qi "From code" /tmp/devops-website.html &&
-                       grep -qi "Jenkins" /tmp/devops-website.html &&
-                       grep -qi "Docker" /tmp/devops-website.html; then
+                    if grep -qi "Automating the Future" \
+                        /tmp/devops-website.html; then
 
-                        echo "HTTPS connection successful"
+                        echo "HTTP test successful"
                         echo "Website content verified"
-                        echo "Smoke test passed!"
-
+                        echo "Smoke test passed"
                         exit 0
                     fi
                 fi
 
-                echo "Waiting for application..."
                 sleep 2
             done
 
-            echo "Smoke test failed!"
-
-            echo "Container status:"
-            docker compose -p "$COMPOSE_PROJECT_NAME" ps -a
-
-            echo "Container logs:"
-            docker compose -p "$COMPOSE_PROJECT_NAME" logs --tail=100 web
-
+            echo "Smoke test failed"
+            docker compose logs --tail=50
             exit 1
         '''
     }
 }
-       
+        
+
+        
     }
 
     post {

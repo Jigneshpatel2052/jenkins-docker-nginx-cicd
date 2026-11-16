@@ -2,23 +2,17 @@
 services:
   web:
     image: devops-portfolio:latest
-
     build:
       context: .
       dockerfile: Dockerfile
 
     ports:
       - "8081:80"
-      - "8443:443"
-
-    volumes:
-            - ./certs:/etc/nginx/certs:ro
-
 
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
       interval: 30s
       timeout: 5s
       retries: 3
