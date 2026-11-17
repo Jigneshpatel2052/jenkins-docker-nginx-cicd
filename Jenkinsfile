@@ -5,6 +5,7 @@ pipeline {
     options {
         timestamps()
         disableConcurrentBuilds()
+        skipDefaultCheckout(true)
     }
 
     triggers {
@@ -18,6 +19,7 @@ pipeline {
 
     stages {
 
+        // STAGE 1: CHECKOUT
         stage('Checkout') {
             steps {
                 echo 'Checking out source code from GitHub...'
@@ -25,6 +27,7 @@ pipeline {
             }
         }
 
+        // STAGE 2: VALIDATE
         stage('Validate') {
             steps {
                 sh '''
@@ -40,7 +43,7 @@ pipeline {
 
                     echo "Checking website content..."
 
-                    grep -qi "From code" index.html
+                    grep -qi "DEVOPS" index.html
                     grep -qi "GitHub" index.html
                     grep -qi "Jenkins" index.html
                     grep -qi "Docker" index.html
@@ -55,23 +58,28 @@ pipeline {
             }
         }
 
+        // STAGE 3: BUILD DOCKER IMAGE
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    set -eu
 
-         
-stage('Build Docker Image') {
-    steps {
-        sh '''
-            docker build -t devops-portfolio:latest .
-        '''
-    }
-}
+                    echo "Building Docker image..."
 
+                    docker build -t ${IMAGE_NAME}:latest .
 
+                    echo "Docker image built successfully!"
+                '''
+            }
+        }
+
+        // STAGE 4: DEPLOY
         stage('Deploy') {
             steps {
                 sh '''
                     set -eu
 
-                    echo "Deploying HTTP application..."
+                    echo "Deploying application..."
 
                     docker compose up -d --no-build --force-recreate
 
@@ -80,8 +88,7 @@ stage('Build Docker Image') {
             }
         }
 
-         
-
+        // STAGE 5: SMOKE TEST
         stage('Smoke Test') {
             steps {
                 sh '''
@@ -95,7 +102,7 @@ stage('Build Docker Image') {
                             http://127.0.0.1:8081/ \
                             -o /tmp/devops-website.html; then
 
-                            if grep -qi "From code" \
+                            if grep -qi "DEVOPS" \
                                 /tmp/devops-website.html; then
 
                                 echo "HTTP response: SUCCESS"
@@ -120,7 +127,9 @@ stage('Build Docker Image') {
         }
     }
 
+    // POST ACTIONS
     post {
+
         success {
             echo 'CI/CD pipeline completed successfully!'
             echo 'HTTP website deployed successfully.'
