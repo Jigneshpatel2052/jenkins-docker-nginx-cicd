@@ -991,3 +991,309 @@ button {
         transition-duration: .01ms !important;
     }
 }
+
+
+/* ==========================================
+   CINEMATIC 3D PORTFOLIO EFFECTS
+   ========================================== */
+
+/* Smooth global experience */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 15% 10%, rgba(115,75,170,.17), transparent 35%),
+        radial-gradient(ellipse at 85% 45%, rgba(80,55,140,.12), transparent 35%),
+        #09080e;
+}
+
+/* Animated ambient lighting */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(164,125,255,.06), transparent 55%);
+    animation: ambientGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes ambientGlow {
+    from {
+        opacity: .35;
+        transform: scale(.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+/* Premium section transitions */
+
+.section {
+    position: relative;
+    isolation: isolate;
+}
+
+.section-label {
+    transition: color .4s ease;
+}
+
+.section:hover .section-label {
+    color: #c7b8ff;
+}
+
+/* 3D skill cards */
+
+.skill-card,
+.roadmap-card,
+.project-card,
+.cert-card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition:
+        transform .5s cubic-bezier(.2,.8,.2,1),
+        border-color .4s ease,
+        box-shadow .4s ease,
+        background .4s ease;
+}
+
+.skill-card:hover,
+.roadmap-card:hover,
+.cert-card:hover {
+    transform: translateY(-10px) rotateX(3deg);
+    border-color: #b9a5ff;
+    box-shadow: 0 20px 50px rgba(120,85,210,.16);
+}
+
+/* Project card animation */
+
+.project-card:hover {
+    transform: translateY(-12px) scale(1.015);
+    box-shadow: 0 25px 60px rgba(120,85,210,.2);
+}
+
+.project-banner {
+    transition: background .5s ease;
+}
+
+.project-card:hover .project-banner {
+    filter: brightness(1.2);
+}
+
+/* Glowing project borders */
+
+.project-card::after,
+.skill-card::after,
+.cert-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .4s ease;
+    box-shadow: inset 0 0 25px rgba(185,165,255,.12);
+}
+
+.project-card:hover::after,
+.skill-card:hover::after,
+.cert-card:hover::after {
+    opacity: 1;
+}
+
+/* Terminal floating effect */
+
+.terminal-card {
+    animation: terminalFloat 5s ease-in-out infinite;
+    transition: box-shadow .4s ease;
+}
+
+.terminal-card:hover {
+    box-shadow: 0 25px 100px rgba(150,110,255,.3);
+}
+
+@keyframes terminalFloat {
+    0%, 100% {
+        transform: translateY(0) rotateY(-3deg);
+    }
+    50% {
+        transform: translateY(-15px) rotateY(3deg);
+    }
+}
+
+/* Floating technology icons */
+
+.floating-icon {
+    animation: iconFloat 4s ease-in-out infinite;
+}
+
+.icon-two {
+    animation-delay: 1s;
+}
+
+.icon-three {
+    animation-delay: 2s;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-18px) rotate(8deg);
+    }
+}
+
+/* Profile glow */
+
+.profile-icon {
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-icon::after {
+    content: "";
+    position: absolute;
+    inset: -100%;
+    background: linear-gradient(
+        110deg,
+        transparent 40%,
+        rgba(255,255,255,.2) 50%,
+        transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform .8s ease;
+}
+
+.profile-icon:hover::after {
+    transform: translateX(100%);
+}
+
+/* Button animations */
+
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    box-shadow: 0 5px 25px rgba(185,165,255,.18);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 10px 35px rgba(185,165,255,.4);
+    transform: translateY(-5px) scale(1.03);
+}
+
+/* Navigation animation */
+
+.navbar nav a {
+    position: relative;
+}
+
+.navbar nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+    width: 0;
+    height: 2px;
+    background: #b9a5ff;
+    transition: width .3s ease;
+}
+
+.navbar nav a:hover::after {
+    width: 100%;
+}
+
+/* Scroll reveal */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(35px);
+    filter: blur(5px);
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.2,.8,.2,1),
+        filter .8s ease;
+}
+
+.reveal.show {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+/* Section heading glow */
+
+.section-heading h2,
+.center-heading h2,
+.about-content h2 {
+    transition: text-shadow .4s ease;
+}
+
+.section-heading h2:hover,
+.center-heading h2:hover,
+.about-content h2:hover {
+    text-shadow: 0 0 25px rgba(185,165,255,.3);
+}
+
+/* Contact card hover */
+
+.contact-card {
+    transition: transform .4s ease, box-shadow .4s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(120,85,210,.16);
+}
+
+/* Smooth social links */
+
+.social-links a,
+.project-link,
+.text-link,
+.contact-item {
+    transition: all .3s ease;
+}
+
+.social-links a:hover,
+.project-link:hover,
+.text-link:hover {
+    color: white;
+    letter-spacing: 1.5px;
+}
+
+/* Responsive and accessibility */
+
+@media (max-width: 750px) {
+    .terminal-card {
+        animation: terminalFloat 6s ease-in-out infinite;
+    }
+
+    .project-card:hover,
+    .skill-card:hover,
+    .roadmap-card:hover,
+    .cert-card:hover {
+        transform: translateY(-5px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}
